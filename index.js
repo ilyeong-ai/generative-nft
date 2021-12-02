@@ -6,20 +6,23 @@ const {
 	saveImageFromBuffer,
 } = require("./utils/saveImage");
 const printWordWrap = require("./utils/printWordWrap");
-
-const { svg2png } = require("svg-png-converter");
+const { convert } = require("convert-svg-to-png");
 
 const drawLayer = async (ctx, image, x, y, w, h) => {
 	ctx.drawImage(image, x, y, w, h);
 };
 
-function getSVG(text, fontSize, width, height) {
+function getSVGFromText(
+	text,
+	{ fontSize, width, height, lineHeight = 19, color, fontFamily }
+) {
 	return `
-	<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns='http://www.w3.org/2000/svg' width=${width} height=${height}>
+		<svg xmlns='http://www.w3.org/2000/svg' width=${width} height=${height}>
 			<foreignObject width='100%' height='100%'>
-				<div xmlns='http://www.w3.org/1999/xhtml' style='font-size:${fontSize}px; text-align:justify'>
+				<div xmlns='http://www.w3.org/1999/xhtml' 
+				style='font-size:${fontSize}px; text-align:justify;
+				line-height:${lineHeight}px; color:${color};
+				font-family:${fontFamily};'>
 				${text}
 				</div>
 			</foreignObject>
@@ -69,28 +72,38 @@ const main = async () => {
 			await frameCtx.drawImage(progressionLayer, 28, 28, 224, 224);
 			saveImageFromCanvas(frame, "layout");
 		})
-		.then(async () => {
-			await printWordWrap(frameCtx, pgn, 28, 272, 22, 224, 16, "#979393");
-			await printWordWrap(frameCtx, pgn, 294, 100, 108, 760, 79, "#E3DDDD");
-			saveImageFromCanvas(frame, "layout2");
-		})
 		.catch((err) => {
 			console.log(err);
 		});
 
-	const smallPgnTextSVG = getSVG(pgn, 16);
-	const pgn_m = svg2png({
-		input: smallPgnTextSVG,
-		encoding: "buffer",
-		format: "png",
+	const smallPgnTextSVG = getSVGFromText(pgn, {
+		fontSize: 16,
+		width: 224,
+		height: 780,
+		lineHeight: 19,
+		color: "#979393",
+		fontFamily: "Roboto, sans-serif",
+	});
+	const smallPgnTextImageBuffer = await convert(smallPgnTextSVG);
+
+	loadImage(smallPgnTextImageBuffer).then(async (img) => {
+		await frameCtx.drawImage(img, 28, 272, 224, 780);
+		// saveImageFromCanvas(frame, "layout3");
 	});
 
-	// alt_2var
-	// const image = await loadImage(`./inputs/knight-bg.png`);
-	// frame2Ctx.drawImage(image, 0, 0);
-	// frame2Ctx.globalCompositeOperation = "source-in";
-	// const image2 = await loadImage(`./output/progressionLayer.png`);
-	// frame2Ctx.drawImage(image2, 0, 0);
-	// saveImageFromCanvas(frame2, "piece");
+	const bgPgnTextSVG = getSVGFromText(pgn, {
+		fontSize: 78,
+		width: 760,
+		height: 1027,
+		lineHeight: 104,
+		color: "#e3dddd",
+		fontFamily: "Noto Serif, serif",
+	});
+	const bgPgnTextImageBuffer = await convert(bgPgnTextSVG);
+
+	loadImage(bgPgnTextImageBuffer).then(async (img) => {
+		await frameCtx.drawImage(img, 280, 22, 760, 1027);
+		saveImageFromCanvas(frame, "textAdded");
+	});
 };
 main();
