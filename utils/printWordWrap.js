@@ -1,5 +1,17 @@
 // takes pgn, x, y, width and puts it on canvas
-function printAtWordWrap(context, text, x, y, lineHeight, fitWidth) {
+function printAtWordWrap(
+	context,
+	text,
+	x,
+	y,
+	lineHeight,
+	fitWidth,
+	fsize,
+	clr
+) {
+	const memo = context.fillStyle;
+	context.fillStyle = clr;
+	context.font = `${fsize}px 'Serif'`;
 	fitWidth = fitWidth || 0;
 
 	if (fitWidth <= 0) {
@@ -30,5 +42,6 @@ function printAtWordWrap(context, text, x, y, lineHeight, fitWidth) {
 	}
 	if (idx > 0)
 		context.fillText(words.join(" "), x, y + lineHeight * currentLine);
+	context.fillStyle = memo;
 }
 module.exports = printAtWordWrap;

@@ -5,10 +5,26 @@ const {
 	saveImageFromCanvas,
 	saveImageFromBuffer,
 } = require("./utils/saveImage");
+const printWordWrap = require("./utils/printWordWrap");
+
+const { svg2png } = require("svg-png-converter");
 
 const drawLayer = async (ctx, image, x, y, w, h) => {
 	ctx.drawImage(image, x, y, w, h);
 };
+
+function getSVG(text, fontSize, width, height) {
+	return `
+	<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns='http://www.w3.org/2000/svg' width=${width} height=${height}>
+			<foreignObject width='100%' height='100%'>
+				<div xmlns='http://www.w3.org/1999/xhtml' style='font-size:${fontSize}px; text-align:justify'>
+				${text}
+				</div>
+			</foreignObject>
+		</svg>`;
+}
 
 scheme = {
 	w: {
@@ -37,18 +53,44 @@ const main = async () => {
 
 	const frame = createCanvas(1080, 1080);
 	const frameCtx = frame.getContext("2d");
+	const frame2 = createCanvas(1080, 1080);
+	const frame2Ctx = frame2.getContext("2d");
 
 	frameCtx.fillStyle = "#FCF5F5";
 	frameCtx.rect(0, 0, 1080, 1080);
 	frameCtx.fill();
+
+	frame2Ctx.fillStyle = "#FFFFFF";
+	frame2Ctx.rect(0, 0, 1080, 1080);
+	frame2Ctx.fill();
 
 	loadImage(progressionLayerBuffer)
 		.then(async (progressionLayer) => {
 			await frameCtx.drawImage(progressionLayer, 28, 28, 224, 224);
 			saveImageFromCanvas(frame, "layout");
 		})
+		.then(async () => {
+			await printWordWrap(frameCtx, pgn, 28, 272, 22, 224, 16, "#979393");
+			await printWordWrap(frameCtx, pgn, 294, 100, 108, 760, 79, "#E3DDDD");
+			saveImageFromCanvas(frame, "layout2");
+		})
 		.catch((err) => {
 			console.log(err);
 		});
+
+	const smallPgnTextSVG = getSVG(pgn, 16);
+	const pgn_m = svg2png({
+		input: smallPgnTextSVG,
+		encoding: "buffer",
+		format: "png",
+	});
+
+	// alt_2var
+	// const image = await loadImage(`./inputs/knight-bg.png`);
+	// frame2Ctx.drawImage(image, 0, 0);
+	// frame2Ctx.globalCompositeOperation = "source-in";
+	// const image2 = await loadImage(`./output/progressionLayer.png`);
+	// frame2Ctx.drawImage(image2, 0, 0);
+	// saveImageFromCanvas(frame2, "piece");
 };
 main();
