@@ -63,14 +63,28 @@ const main = async () => {
 	frameCtx.rect(0, 0, 1080, 1080);
 	frameCtx.fill();
 
-	frame2Ctx.fillStyle = "#FFFFFF";
-	frame2Ctx.rect(0, 0, 1080, 1080);
-	frame2Ctx.fill();
+	// frame2Ctx.fillStyle = "#FFFFFF";
+	// frame2Ctx.rect(0, 0, 1080, 1080);
+	// frame2Ctx.fill();
 
 	loadImage(progressionLayerBuffer)
 		.then(async (progressionLayer) => {
 			await frameCtx.drawImage(progressionLayer, 28, 28, 224, 224);
 			saveImageFromCanvas(frame, "layout");
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+
+	loadImage("./inputs/knight-bg.png")
+		.then(async (mask) => {
+			await frame2Ctx.drawImage(mask, 0, 0);
+			// saveImageFromCanvas(frame2, "mask");
+			frame2Ctx.globalCompositeOperation = "source-in";
+			loadImage("./output/progressionLayer.png").then(async (mask1) => {
+				await frame2Ctx.drawImage(mask1, 0, 0);
+				saveImageFromCanvas(frame2, "mask1");
+			});
 		})
 		.catch((err) => {
 			console.log(err);
@@ -88,7 +102,6 @@ const main = async () => {
 
 	loadImage(smallPgnTextImageBuffer).then(async (img) => {
 		await frameCtx.drawImage(img, 28, 272, 224, 780);
-		// saveImageFromCanvas(frame, "layout3");
 	});
 
 	const bgPgnTextSVG = getSVGFromText(pgn, {
@@ -105,5 +118,32 @@ const main = async () => {
 		await frameCtx.drawImage(img, 280, 22, 760, 1027);
 		saveImageFromCanvas(frame, "textAdded");
 	});
+
+	loadImage("./inputs/knight-bg.png")
+		.then(async (knightbg) => {
+			await frameCtx.drawImage(knightbg, 263, 263, 780, 780);
+			// saveImageFromCanvas(frame, "withk");
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+
+	loadImage("./output/mask1.png")
+		.then(async (knight) => {
+			await frameCtx.drawImage(knight, 263, 263, 780, 780);
+			// saveImageFromCanvas(frame, "withk");
+		})
+		.catch((err) => {
+			console.log(err);
+		});
+
+	loadImage("./inputs/knight-fg.png")
+		.then(async (knightfg) => {
+			await frameCtx.drawImage(knightfg, 263, 263, 780, 780);
+			saveImageFromCanvas(frame, "withk");
+		})
+		.catch((err) => {
+			console.log(err);
+		});
 };
 main();
