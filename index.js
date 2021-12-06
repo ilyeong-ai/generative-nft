@@ -70,7 +70,7 @@ const main = async () => {
 	loadImage(progressionLayerBuffer)
 		.then(async (progressionLayer) => {
 			await frameCtx.drawImage(progressionLayer, 28, 28, 224, 224);
-			saveImageFromCanvas(frame, "layout");
+			// saveImageFromCanvas(frame, "layout");
 		})
 		.catch((err) => {
 			console.log(err);
@@ -81,9 +81,9 @@ const main = async () => {
 			await frame2Ctx.drawImage(mask, 0, 0);
 			// saveImageFromCanvas(frame2, "mask");
 			frame2Ctx.globalCompositeOperation = "source-in";
-			loadImage("./output/progressionLayer.png").then(async (mask1) => {
-				await frame2Ctx.drawImage(mask1, 0, 0);
-				saveImageFromCanvas(frame2, "mask1");
+			loadImage("./output/progressionLayer.png").then(async (pieceMask) => {
+				await frame2Ctx.drawImage(pieceMask, 0, 0);
+				saveImageFromCanvas(frame2, "pieceMask");
 			});
 		})
 		.catch((err) => {
@@ -116,7 +116,7 @@ const main = async () => {
 
 	loadImage(bgPgnTextImageBuffer).then(async (img) => {
 		await frameCtx.drawImage(img, 280, 22, 760, 1027);
-		saveImageFromCanvas(frame, "textAdded");
+		// saveImageFromCanvas(frame, "textAdded");
 	});
 
 	loadImage("./inputs/knight-bg.png")
@@ -128,7 +128,7 @@ const main = async () => {
 			console.log(err);
 		});
 
-	loadImage("./output/mask1.png")
+	loadImage("./output/pieceMask.png")
 		.then(async (knight) => {
 			await frameCtx.drawImage(knight, 263, 263, 780, 780);
 			// saveImageFromCanvas(frame, "withk");
