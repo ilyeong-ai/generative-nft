@@ -10,7 +10,7 @@ const getBlurredProgression = async (pgn) => {
 
 	chess.load_pgn(pgn);
 	let pa = chess.history({ verbose: true });
-	console.log(pa);
+	// console.log(pa);
 	await drawPath(pa, ctx);
 	const pathBuffer = canvas.toBuffer("image/png");
 	const pathImage = await Jimp.read(pathBuffer);
