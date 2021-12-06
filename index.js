@@ -140,7 +140,7 @@ const main = async () => {
 	loadImage("./inputs/knight-fg.png")
 		.then(async (knightfg) => {
 			await frameCtx.drawImage(knightfg, 263, 263, 780, 780);
-			saveImageFromCanvas(frame, "withk");
+			saveImageFromCanvas(frame, "finalNFT");
 		})
 		.catch((err) => {
 			console.log(err);
