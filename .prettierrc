@@ -1,9 +1,11 @@
 {
-    "tabWidth": 2,
-    "arrowParens": "always",
-    "bracketSpacing": true,
-    "jsxBracketSameLine": true,
-    "jsxSingleQuote": false,
-    "printWidth": 80,
-    "useTabs": true
+  "tabWidth": 2,
+  "arrowParens": "always",
+  "bracketSpacing": true,
+  "jsxBracketSameLine": true,
+  "jsxSingleQuote": false,
+  "printWidth": 80,
+  "useTabs": true,
+  "formatOnSave": true,
+  "formatOnPaste": true
 }

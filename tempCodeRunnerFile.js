@@ -1,3 +1,8 @@
-	// frame2Ctx.fillStyle = "#FFFFFF";
-	// frame2Ctx.rect(0, 0, 1080, 1080);
-	// frame2Ctx.fill();
+  // const NFTBuffer = frame.toBuffer("image/png");
+
+  // const metadata = await client.store({
+  //   name: "chesstest",
+  //   description: "Pin is not delicious beef!",
+  //   image: new File([NFTBuffer], "gameid.png", { type: "image/png" }),
+  // });
+  // console.log(metadata.url);
