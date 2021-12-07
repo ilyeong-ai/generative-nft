@@ -59,10 +59,12 @@ scheme = {
 const main = async () => {
 	try {
 		const chess = new Chess();
-		const pgn = `1. Nf3 Nf6 2. b3 g6 3. Bb2 Bg7 4. g3 d6 5. Bg2 O-O 6. O-O c6 7. d3 e5 8. c4 Ne8 9. Nbd2 f5 10. Qc2 Na6 11. c5 Nxc5 12. Nxe5 Qe7 13. d4 Na6 14. Qc4+ Kh8 15. Nef3 Be6 16. Qc3 f4 17. gxf4 Rxf4 18. Qe3 Rf8 19. Ng5 Nec7 20. Nc4 Rae8 21. Nxe6 Qxe6 22. Qxe6 Rxe6 23. e3 d5 24. Ne5 g5 25. Ba3 Rff6 26. Bh3 Re8 27. Bd7 Rd8 28. Be7 Rxd7 29. Bxf6 1-0`;
+		const pgn = `1.e4 Nf6 2.e5 Nd5 3.d4 d6 4.Nf3 g6 5.Bc4 Nb6 6.Bb3 Bg7 7.Qe2 Nc6 8.O-O O-O 9.h3 a5 10.a4 dxe5 11.dxe5 Nd4 12.Nxd4 Qxd4 13.Re1 e6 14.Nd2 Nd5 15.Nf3 Qc5 16.Qe4 Qb4 17.Bc4 Nb6 18.b3 Nxc4 19.bxc4 Re8 20.Rd1 Qc5 21.Qh4 b6 22.Be3 Qc6 23.Bh6 Bh8 24.Rd8 Bb7 25.Rad1 Bg7 26.R8d7 Rf8 27.Bxg7 Kxg7 28.R1d4 Rae8 29.Qf6+ Kg8 30.h4 h5 31.Kh2 Rc8 32.Kg3 Rce8 33.Kf4 Bc8 34.Kg5 0-1`;
 		chess.load_pgn(pgn);
 		let ph = chess.history({ verbose: true });
 		const lmPiece = ph[ph.length - 1].piece;
+		const whiteORblack = pgn.slice(-1);
+		// console.log(whiteORblack);
 
 		const progressionLayerBuffer = await getBlurredProgression(pgn);
 		// saveImageFromBuffer(progressionLayerBuffer, "progressionLayer");
@@ -72,25 +74,32 @@ const main = async () => {
 		const frame2 = createCanvas(1080, 1080);
 		const frame2Ctx = frame2.getContext("2d");
 
-		frameCtx.fillStyle = "#FCF5F5";
-		frameCtx.rect(0, 0, 1080, 1080);
-		frameCtx.fill();
+		if (whiteORblack == "0") {
+			frameCtx.fillStyle = "#FCF5F5";
+			frameCtx.rect(0, 0, 1080, 1080);
+			frameCtx.fill();
+		} else {
+			frameCtx.fillStyle = "#353842";
+			frameCtx.rect(0, 0, 1080, 1080);
+			frameCtx.fill();
+		}
 
 		let progressionLayer = await loadImage(progressionLayerBuffer);
 		frameCtx.drawImage(await progressionLayer, 28, 28, 224, 224);
 
-		let mask = await loadImage(`./inputs/${lmPiece}_bg.png`);
+		let mask = await loadImage(`./inputs/${lmPiece}_bg_${whiteORblack}.png`);
 		frame2Ctx.drawImage(await mask, 0, 0);
 		frame2Ctx.globalCompositeOperation = "source-in";
 		let pieceMask = progressionLayer;
 		frame2Ctx.drawImage(await pieceMask, 0, 0);
 		// saveImageFromCanvas(frame2, "pieceMask");
+
 		const smallPgnTextSVG = getSVGFromText(pgn, {
 			fontSize: 16,
 			width: 224,
 			height: 780,
 			lineHeight: 19,
-			color: "#979393",
+			color: whiteORblack === "0" ? "#979393" : "#D0CBCE",
 			fontFamily: "Roboto, sans-serif",
 		});
 		const smallPgnTextImageBuffer = await convert(smallPgnTextSVG);
@@ -103,7 +112,7 @@ const main = async () => {
 			width: 760,
 			height: 1027,
 			lineHeight: 104,
-			color: "#e3dddd",
+			color: whiteORblack === "0" ? "#E3DDDD" : "#505568",
 			fontFamily: "Noto Serif, serif",
 		});
 		const bgPgnTextImageBuffer = await convert(bgPgnTextSVG);
@@ -111,13 +120,13 @@ const main = async () => {
 		img = loadImage(bgPgnTextImageBuffer);
 		frameCtx.drawImage(await img, 280, 22, 760, 1027);
 
-		let knightbg = loadImage(`./inputs/${lmPiece}_bg.png`);
+		let knightbg = loadImage(`./inputs/${lmPiece}_bg_${whiteORblack}.png`);
 		frameCtx.drawImage(await knightbg, 263, 263, 780, 780);
 
 		let knight = await loadImage(frame2.toBuffer("image/png"));
 		frameCtx.drawImage(await knight, 263, 263, 780, 780);
 
-		let knightfg = loadImage(`./inputs/${lmPiece}_fg.png`);
+		let knightfg = loadImage(`./inputs/${lmPiece}_fg_${whiteORblack}.png`);
 		frameCtx.drawImage(await knightfg, 263, 263, 780, 780);
 		const NFT = frame.toBuffer("image/png");
 		// saveImageFromCanvas(frame, "NFT");

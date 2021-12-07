@@ -9,8 +9,9 @@ const getBlurredProgression = async (pgn) => {
 	const ctx = canvas.getContext("2d");
 
 	chess.load_pgn(pgn);
+	let winColor = pgn.slice(pgn.length - 3, pgn.length);
 	let pa = chess.history({ verbose: true });
-	// console.log(pa);
+	// console.log(winColor);
 	await drawPath(pa, ctx);
 	const pathBuffer = canvas.toBuffer("image/png");
 	const pathImage = await Jimp.read(pathBuffer);
@@ -40,6 +41,8 @@ const drawPath = async (pa, ctx) => {
 const fromCoordinate = (s) => {
 	let xc = { a: 1, b: 2, c: 3, d: 4, e: 5, f: 6, g: 7, h: 8 };
 	let yc = { 8: 1, 7: 2, 6: 3, 5: 4, 4: 5, 3: 6, 2: 7, 1: 8 };
+	// let xc = { h: 1, g: 2, f: 3, e: 4, d: 5, c: 6, b: 7, a: 8 };
+	// let yc = { 1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8 };
 	x = 67.5 + (xc[s[0]] - 1) * 135;
 	y = 67.5 + (yc[s[1]] - 1) * 135;
 	return { x, y };
