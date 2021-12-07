@@ -1,14 +1,16 @@
 const { createCanvas, loadImage } = require("canvas");
 const { Chess } = require("chess.js");
 const getBlurredProgression = require("./utils/getBlurredProgression");
+
 const {
 	saveImageFromCanvas,
 	saveImageFromBuffer,
 } = require("./utils/saveImage");
+
 const { convert } = require("convert-svg-to-png");
+const pseudoRandom = require("pseudo-random");
 
 const { NFTStorage, File } = require("nft.storage");
-
 const apiKey =
 	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDdlOGM0QzAwODBDNDlDQUZiMzBmOWUxYmI4OUQ3NDZiNzk1MDEyNzYiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYzODg3MjM3OTI3OSwibmFtZSI6IlNoYXRyYW5qIn0.QpjDtGf0B3hEVj-hzEpfBCEO0uHv_zvSgo0WqvaM434";
 const client = new NFTStorage({ token: apiKey });
@@ -30,33 +32,15 @@ function getSVGFromText(
 		</svg>`;
 }
 
-const random_hex_color_code = () => {
-	let n = (Math.random() * 0xfffff * 1000000).toString(16);
+const random_hex_color_code = (num) => {
+	let n = (num * 0xfffff * 1000000).toString(16);
 	return "#" + n.slice(0, 6);
-};
-
-scheme = {
-	w: {
-		p: random_hex_color_code(),
-		q: random_hex_color_code(),
-		k: random_hex_color_code(),
-		n: random_hex_color_code(),
-		b: random_hex_color_code(),
-		r: random_hex_color_code(),
-	},
-	b: {
-		p: random_hex_color_code(),
-		q: random_hex_color_code(),
-		k: random_hex_color_code(),
-		n: random_hex_color_code(),
-		b: random_hex_color_code(),
-		r: random_hex_color_code(),
-	},
 };
 
 const main = async () => {
 	try {
 		const chess = new Chess();
+
 		const pgn = `1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 4.Ba4 Nf6 5.O-O Be7 6.Re1 b5 7.Bb3 O-O 8.a4 Bb7
 9.d3 d6 10.Nc3 Na5 11.Ba2 b4 12.Ne2 Rb8 13.Ng3 c5 14.Nd2 Bc8 15.Nc4 Bg4 16.f3 Be6
 17.Nxa5 Qxa5 18.Bc4 Nd7 19.b3 Nb6 20.Rb1 Rbd8 21.Qe2 d5 22.exd5 Nxd5 23.Bd2 f6
@@ -66,11 +50,37 @@ const main = async () => {
 45.dxe4 g5 46.fxg6 hxg6 47.Ke2 f5 48.e5 Qb7 49.Qg5 Qe4+ 50.Kd1 Qc6 51.h4 f4
 52.Qxf4 a5 53.Qg4 Kf7 54.Ke2 Qa6+ 55.Kf2 Qe6 56.Qe4 Qf5+ 57.Qxf5+ gxf5 58.h5 d3
 59.h6 dxc2 60.e6+ Kxe6 61.h7 c1=Q 62.h8=Q Qd2+ 63.Kg3 Qe3+  0-1`;
+
 		chess.load_pgn(pgn);
 		let ph = chess.history({ verbose: true });
+
 		const lmPiece = ph[ph.length - 1].piece;
 		const whiteORblack = pgn.slice(-1);
 		// console.log(whiteORblack);
+
+		var crypto = require("crypto");
+		var hash = crypto.createHash("sha256").update(pgn).digest("hex");
+		var seed = parseInt(BigInt("0x" + hash) % BigInt(10000000000));
+		const prng = pseudoRandom(seed);
+
+		scheme = {
+			w: {
+				p: random_hex_color_code(prng.random()),
+				q: random_hex_color_code(prng.random()),
+				k: random_hex_color_code(prng.random()),
+				n: random_hex_color_code(prng.random()),
+				b: random_hex_color_code(prng.random()),
+				r: random_hex_color_code(prng.random()),
+			},
+			b: {
+				p: random_hex_color_code(prng.random()),
+				q: random_hex_color_code(prng.random()),
+				k: random_hex_color_code(prng.random()),
+				n: random_hex_color_code(prng.random()),
+				b: random_hex_color_code(prng.random()),
+				r: random_hex_color_code(prng.random()),
+			},
+		};
 
 		const progressionLayerBuffer = await getBlurredProgression(pgn);
 		// saveImageFromBuffer(progressionLayerBuffer, "progressionLayer");
@@ -108,6 +118,7 @@ const main = async () => {
 			color: whiteORblack === "0" ? "#979393" : "#D0CBCE",
 			fontFamily: "Roboto, sans-serif",
 		});
+
 		const smallPgnTextImageBuffer = await convert(smallPgnTextSVG);
 
 		let img = loadImage(smallPgnTextImageBuffer);
@@ -121,6 +132,7 @@ const main = async () => {
 			color: whiteORblack === "0" ? "#E3DDDD" : "#505568",
 			fontFamily: "Noto Serif, serif",
 		});
+
 		const bgPgnTextImageBuffer = await convert(bgPgnTextSVG);
 
 		img = loadImage(bgPgnTextImageBuffer);
