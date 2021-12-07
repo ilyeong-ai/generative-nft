@@ -12,7 +12,7 @@ const { convert } = require("convert-svg-to-png");
 const { NFTStorage, File } = require("nft.storage");
 
 const apiKey =
-	"1.e4 Nf6 2.e5 Nd5 3.d4 d6 4.Nf3 g6 5.Bc4 Nb6 6.Bb3 Bg7 7.Qe2 Nc6 8.O-O O-O 9.h3 a5 10.a4 dxe5 11.dxe5 Nd4 12.Nxd4 Qxd4 13.Re1 e6 14.Nd2 Nd5 15.Nf3 Qc5 16.Qe4 Qb4 17.Bc4 Nb6 18.b3 Nxc4 19.bxc4 Re8 20.Rd1 Qc5 21.Qh4 b6 22.Be3 Qc6 23.Bh6 Bh8 24.Rd8 Bb7 25.Rad1 Bg7 26.R8d7 Rf8 27.Bxg7 Kxg7 28.R1d4 Rae8 29.Qf6+ Kg8 30.h4 h5 31.Kh2 Rc8 32.Kg3 Rce8 33.Kf4 Bc8 34.Kg5 1-0";
+	"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDdlOGM0QzAwODBDNDlDQUZiMzBmOWUxYmI4OUQ3NDZiNzk1MDEyNzYiLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTYzODg3MjM3OTI3OSwibmFtZSI6IlNoYXRyYW5qIn0.QpjDtGf0B3hEVj-hzEpfBCEO0uHv_zvSgo0WqvaM434";
 const client = new NFTStorage({ token: apiKey });
 
 function getSVGFromText(
@@ -32,28 +32,33 @@ function getSVGFromText(
 		</svg>`;
 }
 
+const random_hex_color_code = () => {
+	let n = (Math.random() * 0xfffff * 1000000).toString(16);
+	return "#" + n.slice(0, 6);
+};
+
 scheme = {
 	w: {
-		p: "#89D72C",
-		q: "#FB0054",
-		k: "#1D3D18",
-		n: "#6378EB",
-		b: "#B0109C",
-		r: "#DA804D",
+		p: random_hex_color_code(),
+		q: random_hex_color_code(),
+		k: random_hex_color_code(),
+		n: random_hex_color_code(),
+		b: random_hex_color_code(),
+		r: random_hex_color_code(),
 	},
 	b: {
-		p: "#B3CC7D",
-		q: "#7623A8",
-		k: "#6D51EE",
-		n: "#F229A8",
-		b: "#F0797E",
-		r: "#838B2E",
+		p: random_hex_color_code(),
+		q: random_hex_color_code(),
+		k: random_hex_color_code(),
+		n: random_hex_color_code(),
+		b: random_hex_color_code(),
+		r: random_hex_color_code(),
 	},
 };
 
 const main = async () => {
 	const chess = new Chess();
-	const pgn = `1.e4 Nf6 2.e5 Nd5 3.d4 d6 4.Nf3 g6 5.Bc4 Nb6 6.Bb3 Bg7 7.Qe2 Nc6 8.O-O O-O 9.h3 a5 10.a4 dxe5 11.dxe5 Nd4 12.Nxd4 Qxd4 13.Re1 e6 14.Nd2 Nd5 15.Nf3 Qc5 16.Qe4 Qb4 17.Bc4 Nb6 18.b3 Nxc4 19.bxc4 Re8 20.Rd1 Qc5 21.Qh4 b6 22.Be3 Qc6 23.Bh6 Bh8 24.Rd8 Bb7 25.Rad1 Bg7 26.R8d7 Rf8 27.Bxg7 Kxg7 28.R1d4 Rae8 29.Qf6+ Kg8 30.h4 h5 31.Kh2 Rc8 32.Kg3 Rce8`;
+	const pgn = `1.e4 Nf6 2.e5 Nd5 3.d4 d6 4.Nf3 g6 5.Bc4 Nb6 6.Bb3 Bg7 7.Qe2 Nc6 8.O-O O-O 9.h3 a5 10.a4 dxe5 11.dxe5 Nd4 12.Nxd4 Qxd4 13.Re1 e6 14.Nd2 Nd5 15.Nf3 Qc5 16.Qe4 Qb4 17.Bc4 Nb6 18.b3 Nxc4 19.bxc4 Re8 20.Rd1 Qc5 21.Qh4 b6 22.Be3 Qc6 23.Bh6 Bh8 24.Rd8 Bb7 25.Rad1 Bg7 26.R8d7 Rf8 27.Bxg7 Kxg7 28.R1d4 Rae8 29.Qf6+ Kg8 30.h4 h5 31.Kh2 Rc8 32.Kg3 Rce8 33.Kf4 Bc8 34.Kg5 1-0`;
 	chess.load_pgn(pgn);
 	let ph = chess.history({ verbose: true });
 	const lmPiece = ph[ph.length - 1].piece;
